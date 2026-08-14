@@ -1,5 +1,5 @@
 Project Title: Go Cab - Real-Time Cab Booking & Driver Platform
-Live Deployed Website URL: https://n1rnjn.github.io/go-cab/
+Live Deployed Website URL: https://n1rnjn.github.io/cab_booking/
 
 Key Features:
 - Passenger Cab Booking with distance & live fare calculator

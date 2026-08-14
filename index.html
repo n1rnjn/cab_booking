@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go Cab — Cab Booking Platform</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Application Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-app-mode="passenger">
+
+  <!-- FULL SCREEN ROLE-BASED LOGIN MODULE -->
+  <div class="login-page-container" id="login-page-view">
+    <div class="login-card">
+      <div style="width: 48px; height: 48px; background-color: var(--text-primary); color: var(--bg-card); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 16px auto;">
+        <i class="fa-solid fa-taxi"></i>
+      </div>
+
+      <h1 style="font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px;">Welcome to Go Cab</h1>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Select your account type to sign in</p>
+
+      <!-- ROLE SELECTOR TABS -->
+      <div class="role-tab-toggle">
+        <button class="role-toggle-btn active" id="role-passenger-btn" type="button">
+          <i class="fa-solid fa-user"></i> Passenger
+        </button>
+        <button class="role-toggle-btn" id="role-driver-btn" type="button">
+          <i class="fa-solid fa-id-card"></i> Wheel Man
+        </button>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" id="login-label-email">Passenger Phone / Email</label>
+          <input type="text" id="login-email" class="input-field" value="vikram.passenger@gocab.in" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="input-field" value="••••••••" required>
+        </div>
+
+        <button class="btn-primary" id="login-submit-btn" type="submit" style="width: 100%; justify-content: center; padding: 12px; margin-top: 6px;">
+          Sign In as Passenger
+        </button>
+      </form>
+
+      <!-- DEMO ACCOUNTS -->
+      <div style="margin-top: 24px; text-align: left;">
+        <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px;">QUICK DEMO ACCOUNTS</div>
+        
+        <div class="demo-account-card demo-login-btn" data-demo="vikram">
+          <div class="user-avatar-sm">V</div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 700;">Vikram Passenger</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Passenger Portal • ⭐ 4.9</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: var(--text-secondary);"></i>
+        </div>
+
+        <div class="demo-account-card demo-login-btn" data-demo="ananya">
+          <div class="user-avatar-sm">A</div>
+          <div style="flex: 1;">
+            <div style="font-size: 13px; font-weight: 700;">Ananya Wheel Man</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Go Cab Wheel Man Portal • ⭐ 4.95</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="font-size: 11px; color: var(--text-secondary);"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PASSENGER APPLICATION CONTAINER (Hidden until authenticated) -->
+  <div id="main-app-view" style="display: none;">
+    <!-- TOP HEADER -->
+    <header class="app-header">
+      <div class="brand-container" onclick="window.switchTab('book')">
+        <div class="brand-icon">
+          <i class="fa-solid fa-taxi"></i>
+        </div>
+        <div>
+          <div class="brand-title">Go <span>Cab</span></div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-links">
+        <button class="nav-link active" data-tab="book">
+          <i class="fa-solid fa-location-dot"></i> Book Cab
+        </button>
+        <button class="nav-link" data-tab="rides">
+          <i class="fa-solid fa-clock-rotate-left"></i> My Rides
+        </button>
+        <button class="nav-link" data-tab="profile">
+          <i class="fa-solid fa-user"></i> Account & Wallet
+        </button>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="header-actions">
+        <button class="icon-btn-minimal" id="theme-toggle-btn" title="Toggle Theme">
+          <i class="fa-solid fa-sun"></i>
+        </button>
+        <div id="auth-area"></div>
+      </div>
+    </header>
+
+    <!-- MAIN PASSENGER CONTAINER -->
+    <main class="main-container">
+      <div id="tab-content-area"></div>
+    </main>
+  </div>
+
+  <!-- PASSENGER: DRIVER ASSIGNMENT & OTP MODAL -->
+  <div class="modal-overlay" id="driver-modal">
+    <div class="modal-card" style="text-align: center;">
+      <div style="width: 52px; height: 52px; background-color: var(--bg-subtle); border-radius: var(--radius-full); border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 12px auto; color: var(--brand-emerald);">
+        <i class="fa-solid fa-check"></i>
+      </div>
+
+      <h3 style="font-size: 19px; font-weight: 800;">Go Cab Assigned!</h3>
+      <p style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Your Wheel Man driver is on the way in 3 minutes</p>
+
+      <div class="otp-badge" id="driver-otp-display">
+        OTP: 7492
+      </div>
+      <p style="font-size: 11px; color: var(--text-secondary); margin-bottom: 16px;">Give this 4-digit OTP to your driver upon entering the vehicle.</p>
+
+      <div style="background: var(--bg-app); border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 16px; text-align: left;">
+        <div style="font-size: 13.5px; font-weight: 700;" id="driver-name">Rajesh Kumar ⭐ 4.9</div>
+        <div style="font-size: 12px; color: var(--text-secondary);" id="driver-car">Toyota Prius EV • KL-07-EV-4092</div>
+      </div>
+
+      <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="document.getElementById('driver-modal').classList.remove('active')">
+        Track Cab on Map
+      </button>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Application JS -->
+  <script src="app.js"></script>
+</body>
+</html>
